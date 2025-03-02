@@ -1,0 +1,91 @@
+# ========================
+# Frontend (React + Vite)
+# ========================
+# Node modules
+frontend/node_modules/
+
+# Build output
+frontend/dist/
+frontend/.vite/
+frontend/.svelte-kit/
+frontend/build/
+
+# Cache
+frontend/.cache/
+frontend/.npm/
+frontend/.yarn/
+
+# Environment variables
+frontend/.env
+frontend/.env.local
+frontend/.env.development
+frontend/.env.production
+
+# Logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Editor/IDE
+frontend/.idea/
+frontend/.vscode/
+frontend/.eslintcache
+frontend/.prettiercache
+
+# TypeScript
+frontend/tsconfig.tsbuildinfo
+
+# Go binaries
+backend/bin/
+backend/out/
+
+# Dependency directories
+backend/vendor/
+
+# Go workspace file
+backend/go.work
+
+# Environment variables
+backend/.env
+backend/.env.local
+
+# Logs
+backend/*.log
+
+# Editor/IDE
+backend/.idea/
+backend/.vscode/
+
+# ========================
+# General
+# ========================
+# System files
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+docker-compose.yml
+.dockerignore
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# ========================
+# LLM Integration (Future)
+# ========================
+# LLM cache files
+llm_cache/
+
+# API keys/secrets
+*.key
+*.pem
+*.crt
+
+# Redis cache
+dump.rdb
+
+# Local image storage
+images/
+uploads/
