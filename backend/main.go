@@ -3,21 +3,13 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings" // Import strings package for ToTitle
 	"text/template"
 
 	"github.com/saaicasm/city-odyssey/genai"
 )
 
-// "fmt"
-// "log"
-// "os"
-
-// "github.com/joho/godotenv"
-
-var selectedAnimal string
-
 func main() {
-
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -35,40 +27,16 @@ func main() {
 			return
 		}
 
-		// Parse the form data
 		if err := r.ParseForm(); err != nil {
 			http.Error(w, "Error parsing form", http.StatusBadRequest)
 			return
 		}
 
-		// Get the selected animal
-		selectedAnimal = r.FormValue("animal")
-		fmt.Println("Selected Animal:", selectedAnimal) // Print it in the terminal
+		animal := r.FormValue("animal")
+		fmt.Println("Selected Animal:", animal)
 
-		http.Redirect(w, r, "/animal-page", http.StatusSeeOther)
-
-		// Send response back
-		// w.WriteHeader(http.StatusOK)
-		// fmt.Fprintf(w, "You selected: %s", animal)
+		http.Redirect(w, r, "/animal-page?animal="+animal, http.StatusSeeOther)
 	})
-
-	// mux.HandleFunc("/animal-page", func(w http.ResponseWriter, r *http.Request) {
-	// 	tmpl, err := template.ParseFiles("templates/animal.html")
-	// 	if err != nil {
-	// 		http.Error(w, "Error loading template", http.StatusInternalServerError)
-	// 		return
-	// 	}
-
-	// 	data := struct {
-	// 		Animal string
-	// 	}{
-	// 		Animal: selectedAnimal,
-	// 	}
-
-	// 	tmpl.Execute(w, data)
-	// 	genai.ExampleGenerativeModel_GenerateContent_textOnly(selectedAnimal)
-
-	// })
 
 	mux.HandleFunc("/animal-page", func(w http.ResponseWriter, r *http.Request) {
 		tmpl, err := template.ParseFiles("templates/animal.html")
@@ -77,16 +45,25 @@ func main() {
 			return
 		}
 
-		// Generate the animal story
-		story := genai.ExampleGenerativeModel_GenerateContent_textOnly(selectedAnimal)
-
-		data := struct {
-			Story string
-		}{
-			Story: story, // Pass the generated story to the template
+		animal := r.URL.Query().Get("animal")
+		if animal == "" {
+			http.Error(w, "Animal not specified", http.StatusBadRequest)
+			return
 		}
 
-		err = tmpl.Execute(w, data) // Execute the template with the data
+		displayAnimalName := strings.ToTitle(animal) // "raccoon" -> "Raccoon"
+
+		story := genai.ExampleGenerativeModel_GenerateContent_textOnly(animal)
+
+		data := struct {
+			Story      string
+			AnimalName string
+		}{
+			Story:      story,
+			AnimalName: displayAnimalName,
+		}
+
+		err = tmpl.Execute(w, data)
 		if err != nil {
 			http.Error(w, "Error executing template", http.StatusInternalServerError)
 			return
@@ -99,5 +76,4 @@ func main() {
 	if err != nil {
 		fmt.Println("Server error:", err)
 	}
-
 }
