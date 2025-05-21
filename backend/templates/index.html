@@ -3,66 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Select an Animal</title>
+    <title>AI Animal Story Generator</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #f0f8ff; /* Light blue background */
+            background-color: #1a1a2e; /* Dark background */
             font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #e0e0e0; /* Light text color */
         }
         .container {
             max-width: 500px;
-            margin-top: 100px;
-            background: white;
-            padding: 30px;
+            background: #252540; /* Darker container background */
+            padding: 40px;
             border-radius: 15px;
-            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.8s ease-out;
+            border: 1px solid #3a3a5a;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         h1 {
-            font-size: 2.5rem;
-            color: #2c3e50;
-            margin-bottom: 20px;
+            font-size: 2.8rem;
+            color: #8c8cff; /* Lighter purple/blue for headings */
+            margin-bottom: 25px;
+            text-shadow: 0px 0px 10px rgba(140, 140, 255, 0.3);
         }
         h6 {
-            font-size: 1.2rem;
-            color: #34495e;
-            margin-bottom: 20px;
+            font-size: 1.3rem;
+            color: #b0b0f0;
+            margin-bottom: 30px;
         }
         .form-select {
             border-radius: 10px;
-            padding: 10px;
-            border: 2px solid #2980b9;
-            background-color: #ecf0f1;
+            padding: 12px;
+            border: 2px solid #5a5a9a; /* Border color for select */
+            background-color: #353550; /* Background for select */
+            color: #e0e0e0; /* Text color for select */
+            transition: all 0.3s ease-in-out;
+            appearance: none; /* Remove default arrow */
+            -webkit-appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20512%22%3E%3Cpath%20fill%3D%22%23b0b0f0%22%20d%3D%22M192%20256L64%20128%2064%20384z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 12px;
+        }
+        .form-select option {
+            background-color: #353550; /* Option background */
+            color: #e0e0e0; /* Option text color */
         }
         .form-select:focus {
-            border-color: #3498db;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+            border-color: #8c8cff;
+            box-shadow: 0 0 10px rgba(140, 140, 255, 0.5);
+            background-color: #3a3a5a;
+            outline: none;
         }
         .btn-primary {
-            background-color: #2980b9;
-            border-color: #2980b9;
-            padding: 12px 30px;
-            font-size: 1.1rem;
+            background-color: #8c8cff;
+            border-color: #8c8cff;
+            padding: 14px 35px;
+            font-size: 1.2rem;
             text-transform: uppercase;
             border-radius: 30px;
-            transition: all 0.3s;
+            transition: all 0.3s ease-in-out;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0px 5px 15px rgba(140, 140, 255, 0.3);
         }
         .btn-primary:hover {
-            background-color: #3498db;
-            border-color: #3498db;
-        }
-        p {
-            font-size: 1.1rem;
-            color: #2c3e50;
-            font-weight: bold;
+            background-color: #a0a0ff;
+            border-color: #a0a0ff;
+            transform: translateY(-5px);
+            box-shadow: 0px 10px 25px rgba(140, 140, 255, 0.4);
         }
         .form-label {
-            font-size: 1rem;
-            color: #34495e;
+            font-size: 1.1rem;
+            color: #b0b0f0;
             font-weight: bold;
+            margin-bottom: 10px;
         }
         .mb-3 {
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Loading spinner */
+        .spinner-border {
+            width: 2rem;
+            height: 2rem;
+            color: #8c8cff;
+        }
+        .generating-text {
+            color: #b0b0f0;
+            margin-top: 15px;
+            font-size: 1.1rem;
         }
     </style>
 </head>
@@ -71,41 +110,57 @@
 <div class="container text-center">
     <h1>AI Animal Story Generator</h1>
     <h6 class="mb-3">Choose Your Favorite Animal</h6>
-    <form id="animalForm" action='/animal' method='POST'>
+    <form id="animalForm" action='/animal' method='POST' onsubmit="showLoading()">
         <div class="mb-3">
             <label for="animalSelect" class="form-label">Select an animal:</label>
             <br>
-            <select class="form-select" id="animalSelect" name="animal">
+            <select class="form-select" id="animalSelect" name="animal" required>
                 <option value="">-- Select --</option>
                 
-                <!-- Mammals -->
-                <option value="raccoon">Raccoon</option>
-                <option value="otter">Otter</option>
-                <option value="hedgehog">Hedgehog</option>
-                <option value="meerkat">Meerkat</option>
-                <option value="lemur">Lemur</option>
+                <optgroup label="Mammals">
+                    <option value="raccoon">Raccoon</option>
+                    <option value="otter">Otter</option>
+                    <option value="hedgehog">Hedgehog</option>
+                    <option value="meerkat">Meerkat</option>
+                    <option value="lemur">Lemur</option>
+                </optgroup>
                 
-                <!-- Aquatic Animals -->
-                <option value="dolphin">Dolphin</option>
-                <option value="stingray">Stingray</option>
-                <option value="jellyfish">Jellyfish</option>
-                <option value="starfish">Starfish</option>
-                <option value="seahorse">Seahorse</option>
+                <optgroup label="Aquatic Animals">
+                    <option value="dolphin">Dolphin</option>
+                    <option value="stingray">Stingray</option>
+                    <option value="jellyfish">Jellyfish</option>
+                    <option value="starfish">Starfish</option>
+                    <option value="seahorse">Seahorse</option>
+                </optgroup>
                 
-                <!-- Birds -->
-                <option value="flamingo">Flamingo</option>
-                <option value="pelican">Pelican</option>
-                <option value="parrot">Parrot</option>
+                <optgroup label="Birds">
+                    <option value="flamingo">Flamingo</option>
+                    <option value="pelican">Pelican</option>
+                    <option value="parrot">Parrot</option>
+                </optgroup>
             
-                <!-- Random Animals -->
-                <option value="chameleon">Chameleon</option>
-                <option value="armadillo">Armadillo</option>
+                <optgroup label="Others">
+                    <option value="chameleon">Chameleon</option>
+                    <option value="armadillo">Armadillo</option>
+                </optgroup>
             </select>
             <br>
-        <button type="submit" class="btn btn-primary w-100">Submit</button>
+        <button type="submit" class="btn btn-primary w-100" id="submitBtn">Generate Story</button>
+        <div id="loadingIndicator" class="mt-4" style="display:none;">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="generating-text">Generating your story...</p>
+        </div>
     </form>
-    <p class="mt-3" id="result" style="font-weight: bold;"></p>
 </div>
+
+<script>
+    function showLoading() {
+        document.getElementById('submitBtn').style.display = 'none';
+        document.getElementById('loadingIndicator').style.display = 'block';
+    }
+</script>
 
 </body>
 </html>
